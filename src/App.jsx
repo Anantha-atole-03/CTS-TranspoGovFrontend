@@ -6,14 +6,12 @@ import Login from "./pages/features/authentication/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
-
 function App() {
 
 
   return (
     <>
     <Header/>
-     
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
