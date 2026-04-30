@@ -1,48 +1,58 @@
-// program resource api calls
+// program-resource.api.js
 import api from '../config/axios.config';
 
-function getPrograms() {
-    return api.get('/programs/');
-}
+/* ================= PROGRAM APIs ================= */
 
-function getProgramById(id) {
-    return api.get(`/programs/${id}/`);
-}
+export const getPrograms = () => api.get('/programs/');
 
-function createProgram(programData) {
-    return  api.post('/programs/', programData);
-}
-    
-async function updateProgram(id, programData) {
-    return await api.put(`/programs/${id}/`, programData);
-}
+export const getProgramById = (id) =>
+  api.get(`/programs/${id}`);
 
-async function submitProgramForApproval(programId) {
-    return await api.patch(`/programs/${programId}/submit`);
-}
+export const createProgram = (programData) =>
+  api.post('/programs/', programData);
 
-async function approveProgram(programId) {
-    return await api.patch(`/programs/${programId}/approve`);
-}
+export const updateProgram = (id, programData) =>
+  api.put(`/programs/${id}`, programData);
 
-async function changeProgramStatus(status, programId) {
-    return await api.patch(`/programs/${programId}/status/${status}`);
-}
+export const submitProgramForApproval = (programId) =>
+  api.patch(`/programs/${programId}/submit`);
 
-function deleteProgram(id) {
-    return api.delete(`/programs/${id}/`);
-}
+export const approveProgram = (programId) =>
+  api.patch(`/programs/${programId}/approve`);
 
-function getProgramResources(programId) {
-    return api.get(`/programs/${programId}/resources/`);
-}
+export const changeProgramStatus = (programId, status) =>
+  api.patch(`/programs/${programId}/status/${status}`);
 
-function addResourceToProgram(programId, resourceData) {
-    return api.post(`/programs/${programId}/resources/`, resourceData);
-}
+export const deleteProgram = (id) =>
+  api.delete(`/programs/${id}`);
 
-function getAllResources() {
-    return api.get('/resources/');
-}
-    
-export { getPrograms, getProgramById, createProgram, updateProgram, submitProgramForApproval, approveProgram, changeProgramStatus, deleteProgram, getProgramResources, addResourceToProgram , getAllResources};
+
+/* ================= RESOURCE APIs ================= */
+
+export const getAllResources = () =>
+  api.get('/resources/');
+
+export const getResourceById = (id) =>
+  api.get(`/resources/${id}`);
+
+export const getResourcesByProgram = (programId) =>
+  api.get('/resources', {
+    params: { programId }
+  });
+
+export const addResource = (resourceData) =>
+  api.post('/resources/', resourceData);
+
+export const changeResourceStatus = (resourceId, status) =>
+  api.patch(`/resources/${resourceId}`, null, {
+    params: { status }
+  });
+
+export const allocateResource = (resourceId) =>
+  api.patch(`/resources/${resourceId}/allocate`);
+
+export const deleteResource = (resourceId) =>
+  api.delete(`/resources/${resourceId}`);
+
+export const getProgramUtilization = (programId) =>
+  api.get(`/resources/${programId}/utilizations`);
