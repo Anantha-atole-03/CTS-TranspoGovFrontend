@@ -12,7 +12,7 @@ export const createProgram = (programData) =>
   api.post('/programs/', programData);
 
 export const updateProgram = (id, programData) =>
-  api.put(`/programs/${id}`, programData);
+  api.post(`/programs/${id}`, programData);
 
 export const submitProgramForApproval = (programId) =>
   api.patch(`/programs/${programId}/submit`);
@@ -20,8 +20,10 @@ export const submitProgramForApproval = (programId) =>
 export const approveProgram = (programId) =>
   api.patch(`/programs/${programId}/approve`);
 
-export const changeProgramStatus = (programId, status) =>
-  api.patch(`/programs/${programId}/status/${status}`);
+export const changeProgramStatus = (programId, status) => {
+  console.log(`Changing status of program ${programId} to ${status}`);
+  return api.patch(`/programs/${programId}/status/${status}`);
+};
 
 export const deleteProgram = (id) =>
   api.delete(`/programs/${id}`);
