@@ -13,7 +13,7 @@ const Dashboard = () => {
   }
 if(ROLES.CITIZEN_PASSENGER===role){
   return <CitizenDashboard />
-}else if(ROLES.ADMIN===role || ROLES.COMPLIANCE_OFFICER===role || ROLES.TRANSPORT_OFFICER===role){
+}else{
   return <UserDashboard />
 }
   switch (role) {
