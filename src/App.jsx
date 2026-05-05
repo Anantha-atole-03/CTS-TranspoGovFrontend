@@ -9,6 +9,8 @@ import store from "./redux/store";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
+import { About } from "./pages/About";
+import Contact from "./pages/Contact";
 
 
 
@@ -28,8 +30,9 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route path="/contact" element={<div>Contact</div>} />
-        <Route path="/about" element={<div>About</div>} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        
       </Routes>
       <Footer />
       
