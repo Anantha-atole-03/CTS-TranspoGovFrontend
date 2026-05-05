@@ -79,11 +79,11 @@ function ViewProgram({ programId, onClose, show }) {
     const handleChangeStatus = async (newStatus) => {
     try {
         setLoading(true);
-        await changeProgramStatus(programId, newStatus);
+        const response = await changeProgramStatus(programId, newStatus);
         setProgram(prev => ({ ...prev, status: newStatus }));
         toast.success('Program status updated successfully');
     } catch (err) {
-        
+
         if (err.status === 401 || err.status === 403) {
             setError('Unauthorized access. Please log in again.');
             toast.error('Unauthorized access');
