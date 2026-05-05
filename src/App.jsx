@@ -18,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/contact" element={<div>Contact</div>} />
         <Route path="/about" element={<div>About</div>} />
+        
       </Routes>
       <Footer/>
     </>
