@@ -26,8 +26,8 @@ const Header = () => {
         <Navbar.Collapse>
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/">About</Nav.Link>
-            <Nav.Link as={Link} to="/">Contact</Nav.Link>
+            <Nav.Link as={Link} to="/about">About</Nav.Link>
+            <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
             {isAuthenticated && (
               <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
             )}

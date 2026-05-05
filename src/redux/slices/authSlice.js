@@ -1,24 +1,23 @@
 //auth Slice
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { decodeJwt, login, register } from '../../services/AuthService';
+import { decodeJwt,  register } from '../../services/AuthService';
+import {login } from '../../axios/auth_api';
 
 export const loginUser = createAsyncThunk(
-  '/user/auth/login',
+  '/auth/login',
   async (credentials, thunkAPI) => {
     try {
-      const response = await login(credentials);
 
+      const response = await login({phone: credentials.phone, password: credentials.password});
       console.log(response);
 
-      const data = decodeJwt(response.data.data.token);
-
+      const data = decodeJwt(response.data.token);
+      if (!data) throw new Error('Invalid token received from server');
       const payload = {
-        token: response.data.data.token,
+        token: response.data.token,
         user: {
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          status : 'ACTIVE'
+          id: data.id,
+          role: data.role
         }
 
       };
@@ -41,11 +40,12 @@ export const registerUser = createAsyncThunk(
       console.log(credentials);
 
       const response = await register(credentials);
-      if (response.status != 201) throw new Error(response.data.message);
+      if (response.status !== 200) throw new Error(response.data.message);
 
       const token = response.data.data.token;
 
       const data = decodeJwt(token);
+      if (!data) throw new Error('Invalid token received from server');
       console.log(response, data);
 
       const payload = {
