@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import { About } from "./pages/About";
 import Contact from "./pages/Contact";
+import RouteScheduleDashboard from "./pages/features/routes/RouteScheduleDashboard";
 
 
 
@@ -30,6 +31,9 @@ function App() {
             </ProtectedRoute>
           } 
         />
+        <Route path="/routes" element={
+          <RouteScheduleDashboard />
+        } />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         

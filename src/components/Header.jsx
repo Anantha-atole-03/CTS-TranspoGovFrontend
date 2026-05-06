@@ -1,12 +1,12 @@
 import React from "react"
-import { Navbar, Nav, Container, Button, Badge } from "react-bootstrap"
+import { Navbar, Nav, Container, Button } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
 import { useRole } from "../hooks/useRole"
 import { useDispatch } from "react-redux"
 import { logout } from "../redux/slices/authSlice"
 
 const Header = () => {
-  const { isAuthenticated, user, role } = useRole()
+  const { isAuthenticated } = useRole()
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -39,17 +39,13 @@ const Header = () => {
                 Login
               </Button>
             ) : (
-              <>
-                <span className="text-light me-2">{user?.name}</span>
-                <Badge bg="info" className="me-3">{role}</Badge>
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </>
+              <Button
+                variant="outline-danger"
+                size="sm"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
             )}
           </Nav>
         </Navbar.Collapse>
