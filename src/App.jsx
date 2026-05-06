@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/features/authentication/Login";
@@ -11,6 +10,7 @@ import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import { About } from "./pages/About";
 import Contact from "./pages/Contact";
+import AccessDenied from "./components/AccessDenied";
 
 
 
@@ -32,6 +32,7 @@ function App() {
         />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
+        <Route path="/access-denied" element={<AccessDenied />} />
         
       </Routes>
       <Footer />

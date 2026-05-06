@@ -18,6 +18,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+    } else if (error.response?.status === 403) {
+      window.location.href = '/access-denied';
     }
     return Promise.reject(error);
   }
