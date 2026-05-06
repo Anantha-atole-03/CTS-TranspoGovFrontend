@@ -9,7 +9,7 @@ const CreateRouteForm = ({ onSave, onCancel }) => {
         type: 'Bus',
         startPoint: '',
         endPoint: '',
-        status: ROUTE_STATUS.DRAFT
+        status: ROUTE_STATUS.DRAFT // Default status
     }
 
     const [route, setRoute] = useState(initialState)
@@ -21,9 +21,11 @@ const CreateRouteForm = ({ onSave, onCancel }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!route.title || !route.startPoint || !route.endPoint) return
+        if (!route.title || !route.startPoint || !route.endPoint) return // Ensure required fields are filled
 
+        // Send the route object without routeId
         onSave(route)
+
         setRoute(initialState) // Reset form after successful creation
     }
 

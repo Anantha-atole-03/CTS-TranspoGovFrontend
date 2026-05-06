@@ -7,7 +7,7 @@ import { FaUserCog, FaChartBar, FaCog, FaFileAlt, FaBus } from "react-icons/fa"
 import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
 import { Col, Row } from "react-bootstrap"
 import ProgramsResources from "../features/programs_resources/ProgramsResources"
-import RouteScheduleDashboard from "../features/routes/RouteScheduleDashboard"
+import RouteScheduleDashboard from "../features/routes_schedule/RouteScheduleDashboard"
 // import { ROLES } from "../../config/roleConfig"
 
 const iconMap = {

@@ -11,8 +11,7 @@ import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import { About } from "./pages/About";
 import Contact from "./pages/Contact";
-import RouteScheduleDashboard from "./pages/features/routes/RouteScheduleDashboard";
-
+import RouteScheduleDashboard from "./pages/features/routes_schedule/RouteScheduleDashboard";
 
 
 function App() {

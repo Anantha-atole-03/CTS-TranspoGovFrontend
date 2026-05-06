@@ -78,25 +78,9 @@ const RouteScheduleDashboard = () => {
         try {
             if (editingRoute) {
                 // Update existing route
-                const routeId = getRouteId(editingRoute)
-                console.log('📝 Updating route:', { id: routeId, route })
-                
-                // Send only the fields that should be updated, not the entire object
-                const updatePayload = {
-                    title: route.title,
-                    type: route.type,
-                    startPoint: route.startPoint,
-                    endPoint: route.endPoint,
-                    status: route.status
-                }
-                
-                await updateRoute(routeId, updatePayload)
-                
-                // Update the local state with the new route data
-                setRoutes(prev => prev.map(item => 
-                    getRouteId(item) === routeId ? { ...item, ...updatePayload } : item
-                ))
-                
+                console.log('📝 Updating route:', route)
+                await updateRoute(getRouteId(editingRoute), route)
+                setRoutes(prev => prev.map(item => getRouteId(item) === getRouteId(editingRoute) ? route : item))
                 toast.success('Route updated successfully.')
             } else {
                 // Create new route
@@ -111,7 +95,7 @@ const RouteScheduleDashboard = () => {
             setCurrentView('list')
         } catch (err) {
             console.error('❌ Error saving route:', err.message)
-            toast.error(err.response?.data?.message || 'Failed to save route.')
+            toast.error('Failed to save route.')
         }
     }
 
@@ -171,13 +155,24 @@ const RouteScheduleDashboard = () => {
         try {
             if (editingSchedule) {
                 console.log('📝 Updating schedule:', schedule)
-                await updateSchedule(schedule.scheduleID, schedule)
-                setSchedules(prev => prev.map(item => (item.scheduleID === schedule.scheduleID ? schedule : item)))
+                const scheduleId = schedule.scheduleId || editingSchedule.scheduleId
+                await updateSchedule(scheduleId, {
+                    date: schedule.date,
+                    time: schedule.time,
+                    status: schedule.status
+                })
+                setSchedules(prev => prev.map(item => 
+                    (item.scheduleId === scheduleId ? { ...item, ...schedule } : item)
+                ))
                 toast.success('Schedule updated successfully.')
             } else {
-                const routeKey = normalizeId(schedule.routeID ?? schedule.routeId)
+                const routeKey = normalizeId(schedule.routeId ?? schedule.routeID)
                 console.log('✅ Creating schedule for route:', routeKey)
-                const response = await createSchedule(routeKey, schedule)
+                const response = await createSchedule(routeKey, {
+                    date: schedule.date,
+                    time: schedule.time,
+                    status: schedule.status
+                })
                 const createdSchedule = response.data.data || response.data || schedule
                 setSchedules(prev => [createdSchedule, ...prev])
                 toast.success('Schedule created successfully.')
