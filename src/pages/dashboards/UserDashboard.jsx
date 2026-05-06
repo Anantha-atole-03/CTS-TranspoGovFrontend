@@ -3,17 +3,26 @@ import { useRole } from "../../hooks/useRole"
 import UserManagement from "../features/user/UserManagement"
 import SidebarLayout from "../../components/SidebarLayout"
 import "./Dashboard.css"
-import { FaUserCog, FaChartBar, FaCog, FaFileAlt, FaBus } from "react-icons/fa"
+
+import RouteScheduleDashboard from "../features/routes_schedule/RouteScheduleDashboard"
+
+import { FaUserCog, FaChartBar, FaCog, FaFileAlt, FaClipboardCheck ,FaBus} from "react-icons/fa"
 import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
 import { Col, Row } from "react-bootstrap"
 import ProgramsResources from "../features/programs_resources/ProgramsResources"
-import RouteScheduleDashboard from "../features/routes_schedule/RouteScheduleDashboard"
-// import { ROLES } from "../../config/roleConfig"
+import ComplianceList from "../features/compliance_audits/complianceList"
+import AuditsList from "../features/compliance_audits/AuditsList"
+
+import { ROLES } from "../../config/roleConfig"
+
 
 const iconMap = {
   users: <FaUserCog />,
   'programs-resources': <FaFileAlt />,
   routes: <FaBus />,
+  compliance: <FaClipboardCheck />,
+  
+  audits: <FaClipboardCheck />,
   reports: <FaChartBar />,
   settings: <FaCog />
 }
@@ -25,12 +34,20 @@ const UserDashboard = () => {
   const allMenuItems = [
     { key: "users", label: "User Management", requiredComponent: "UserManagement" },
     { key: "programs-resources", label: "Programs & Resources", requiredComponent: "ProgramsResources" },
+
     { key: "routes", label: "Routes & Schedules", requiredComponent: "Routes" },
+
+    { key: "compliance", label: "Compliance", requiredComponent: "Compliance" },
+    { key: "audits", label: "Audits", requiredComponent: "Audits" },
+
     { key: "reports", label: "Reports", requiredComponent: "Reports" },
     { key: "settings", label: "Settings", requiredComponent: "Settings" }
   ]
 
+
   const menuItems = allMenuItems//.filter(item => canAccess(item.requiredComponent) || item.requiredComponent === "UserManagement")
+
+
 
   const renderContent = () => {
     switch (activeKey) {
@@ -41,6 +58,13 @@ const UserDashboard = () => {
       case "routes":
         return <RouteScheduleDashboard />
         // return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">You do not have access to this section</div>
+
+        return <ProgramsResources /> 
+      case "compliance":
+        return <ComplianceList />
+      case "audits":
+        return <AuditsList />
+
       case "reports":
         return <h4>Reports</h4>
       case "settings":

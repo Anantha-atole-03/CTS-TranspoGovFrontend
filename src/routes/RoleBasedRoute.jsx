@@ -19,7 +19,7 @@ export const RoleBasedRoute = ({
     : hasRole(requiredRoles);
 
   if (!hasAccess) {
-    return fallback || <div className="alert alert-danger">You do not have permission to access this page.</div>;
+    return <Navigate to="/access-denied" />;
   }
 
   return children;
