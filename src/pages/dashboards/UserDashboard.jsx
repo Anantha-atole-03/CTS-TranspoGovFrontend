@@ -7,6 +7,7 @@ import { FaUserCog, FaChartBar, FaCog, FaFileAlt } from "react-icons/fa"
 import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
 import { Col, Row } from "react-bootstrap"
 import ProgramsResources from "../features/programs_resources/ProgramsResources"
+import Reports from "../features/reports/Reports"
 import { ROLES } from "../../config/roleConfig"
 
 const iconMap = {
@@ -37,7 +38,7 @@ const UserDashboard = () => {
          return <ProgramsResources /> 
         // return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">You do not have access to this section</div>
       case "reports":
-        return <h4>Reports</h4>
+        return <Reports />
       case "settings":
         return <h4>Settings</h4>
       default:

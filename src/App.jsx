@@ -9,7 +9,8 @@ import store from "./redux/store";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
-
+import Reports from './pages/features/reports/Reports';
+import DebugApi from './pages/DebugApi';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/debug-api" element={<DebugApi />} />
         <Route 
           path="/dashboard" 
           element={  
@@ -30,6 +32,9 @@ function App() {
         />
         <Route path="/contact" element={<div>Contact</div>} />
         <Route path="/about" element={<div>About</div>} />
+        <Route path="/reports" element={<Reports />} />
+        
+        
       </Routes>
       <Footer />
       
