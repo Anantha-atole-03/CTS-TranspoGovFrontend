@@ -16,10 +16,10 @@ export const createRoute = async (routeData) => {
 
 export const updateRoute = async (routeID, routeData) => {
 	if (!routeID) {
-		console.error('❌ updateRoute called with missing routeID')
+		console.error(' updateRoute called with missing routeID')
 		throw new Error('Route ID is required for update')
 	}
-	console.log('📝 API: updateRoute', { routeID, routeData })
+	console.log(' API: updateRoute', { routeID, routeData })
 	return api.put(`/route/${routeID}`, routeData)
 }
 
