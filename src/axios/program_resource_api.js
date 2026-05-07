@@ -45,16 +45,25 @@ export const getResourcesByProgram = (programId) =>
 export const addResource = (resourceData) =>
   api.post('/resources/', resourceData);
 
+export const updateResource = (resourceId, resourceData) =>
+  api.put(`/resources/${resourceId}`, resourceData);
+
 export const changeResourceStatus = (resourceId, status) =>
   api.patch(`/resources/${resourceId}`, null, {
     params: { status }
   });
 
-export const allocateResource = (resourceId) =>
-  api.patch(`/resources/${resourceId}/allocate`);
+export const allocateResource = (resourceId, allocationData) =>
+  api.patch(`/resources/${resourceId}/allocate`, allocationData);
 
 export const deleteResource = (resourceId) =>
   api.delete(`/resources/${resourceId}`);
 
 export const getProgramUtilization = (programId) =>
   api.get(`/resources/${programId}/utilizations`);
+
+export const getResourceAnalytics = (resourceId) =>
+  api.get(`/resources/${resourceId}/analytics`);
+
+export const getProgramResourceAnalytics = (programId) =>
+  api.get(`/resources/program/${programId}/analytics`);

@@ -1,77 +1,116 @@
+
 import React, { useState } from "react"
 import { useRole } from "../../hooks/useRole"
 import UserManagement from "../features/user/UserManagement"
 import SidebarLayout from "../../components/SidebarLayout"
 import "./Dashboard.css"
 
-import RouteScheduleDashboard from "../features/routes_schedule/RouteScheduleDashboard"
+import {
+  FaUserCog,
+  FaChartBar,
+  FaCog,
+  FaFileAlt,
+  FaClipboardCheck,
+  FaChartLine,
+  FaBus
+} from "react-icons/fa"
 
-import { FaUserCog, FaChartBar, FaCog, FaFileAlt, FaClipboardCheck ,FaBus} from "react-icons/fa"
 import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
 import { Col, Row } from "react-bootstrap"
+
 import ProgramsResources from "../features/programs_resources/ProgramsResources"
 import ComplianceList from "../features/compliance_audits/complianceList"
 import AuditsList from "../features/compliance_audits/AuditsList"
+import RouteScheduleDashboard from "../features/routes_schedule/RouteScheduleDashboard"
 
 import { ROLES } from "../../config/roleConfig"
 
-
 const iconMap = {
   users: <FaUserCog />,
-  'programs-resources': <FaFileAlt />,
+  "programs-resources": <FaFileAlt />,
   routes: <FaBus />,
   compliance: <FaClipboardCheck />,
-  
   audits: <FaClipboardCheck />,
   reports: <FaChartBar />,
+  analytics: <FaChartLine />,
   settings: <FaCog />
 }
 
 const UserDashboard = () => {
   const { user, role, canAccess } = useRole()
-  const [activeKey, setActiveKey] = useState("users")
+  const [activeKey, setActiveKey] = useState("programs-resources")
 
-  const allMenuItems = [
-    { key: "users", label: "User Management", requiredComponent: "UserManagement" },
+  const baseMenuItems = [
     { key: "programs-resources", label: "Programs & Resources", requiredComponent: "ProgramsResources" },
-
     { key: "routes", label: "Routes & Schedules", requiredComponent: "Routes" },
-
     { key: "compliance", label: "Compliance", requiredComponent: "Compliance" },
     { key: "audits", label: "Audits", requiredComponent: "Audits" },
-
     { key: "reports", label: "Reports", requiredComponent: "Reports" },
-    { key: "settings", label: "Settings", requiredComponent: "Settings" }
   ]
 
 
+  const adminMenuItems = [
+    { key: "users", label: "User Management", requiredComponent: "UserManagement" },
+    { key: "settings", label: "Settings", requiredComponent: "Settings" },
+  ]
+
+  const complianceMenuItems = [
+    { key: "compliance", label: "Compliance", requiredComponent: "Compliance" },
+    { key: "audits", label: "Audits", requiredComponent: "Audits" },
+  ]
+
+  let menuItems = [...baseMenuItems]
+
+  // Add role-specific menu items
+  if (role === ROLES.ADMINISTRATOR) {
+    menuItems = [...adminMenuItems, ...baseMenuItems, ...complianceMenuItems]
+  } else if (role === ROLES.PROGRAM_MANAGER) {
+    menuItems = [...baseMenuItems, ...complianceMenuItems]
+  } else if (role === ROLES.COMPLIANCE_OFFICER || role === ROLES.GOVERNMENT_AUDITOR) {
+    menuItems = [...complianceMenuItems, { key: "reports", label: "Reports", requiredComponent: "Reports" }]
+  } else if (role === ROLES.TRANSPORT_OFFICER) {
+    menuItems = [...baseMenuItems]
+  }
+
   const menuItems = allMenuItems//.filter(item => canAccess(item.requiredComponent) || item.requiredComponent === "UserManagement")
-
-
 
   const renderContent = () => {
     switch (activeKey) {
       case "users":
-        return <UserManagement />
+        return canAccess('UserManagement') ? <UserManagement /> : <div className="alert alert-danger">Access Denied</div>
       case "programs-resources":
+        return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">Access Denied</div>
+
          return <ProgramsResources /> 
       case "routes":
         return <RouteScheduleDashboard />
         // return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">You do not have access to this section</div>
-
         return <ProgramsResources /> 
       case "compliance":
+        // return canAccess('Compliance') ? <ComplianceList /> : <div className="alert alert-danger">Access Denied</div>
         return <ComplianceList />
-      case "audits":
-        return <AuditsList />
+        case "audits":
+        // return canAccess('Audits') ? <AuditsList /> : <div className="alert alert-danger">Access Denied</div>
 
+        return <AuditsList />
       case "reports":
-        return <h4>Reports</h4>
+        return canAccess('Reports') ? <h4>Reports & Analytics</h4> : <div className="alert alert-danger">Access Denied</div>
       case "settings":
-        return <h4>Settings</h4>
+        return canAccess('Settings') ? <h4>System Settings</h4> : <div className="alert alert-danger">Access Denied</div>
       default:
         return null
     }
+  }
+
+  const getRoleName = () => {
+    const roleNames = {
+      [ROLES.ADMINISTRATOR]: 'Administrator',
+      [ROLES.PROGRAM_MANAGER]: 'Program Manager',
+      [ROLES.TRANSPORT_OFFICER]: 'Transport Officer',
+      [ROLES.COMPLIANCE_OFFICER]: 'Compliance Officer',
+      [ROLES.GOVERNMENT_AUDITOR]: 'Government Auditor',
+    }
+    return roleNames[role] || role
   }
 
   return (
@@ -84,7 +123,7 @@ const UserDashboard = () => {
       <Row className="mb-4 align-items-center justify-content-between">
         <Col>
           <h1>Welcome, {user?.name}!</h1>
-          <p>{user?.role?.toUpperCase().replace(/_/g, ' ')} Dashboard</p>
+          <p>{getRoleName()} Dashboard</p>
         </Col>
         <Col xs="auto" className="d-flex gap-3">
           <BiSolidBell size={24} style={{ cursor: 'pointer' }} />

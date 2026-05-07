@@ -21,6 +21,9 @@ export const loginUser = createAsyncThunk(
         }
 
       };
+            console.log(payload);
+            localStorage.setItem('token', payload.token);
+            localStorage.setItem('user', JSON.stringify(payload.user));
 
       return payload;
 
@@ -57,6 +60,7 @@ export const registerUser = createAsyncThunk(
           status : 'ACTIVE'
         }
       };
+
 
       return payload;
 

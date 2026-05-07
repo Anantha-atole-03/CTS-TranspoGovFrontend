@@ -10,15 +10,7 @@ const ProtectedRoute = ({ children, requiredRoles, componentName }) => {
     return <Navigate to="/login" />;
   }
 
-  const hasAccess = componentName 
-    ? hasPermission(componentName)
-    : requiredRoles 
-    ? hasRole(requiredRoles)
-    : true;
 
-  // if (!hasAccess) {
-  //   return <Navigate to="/" />;
-  // }
 
   return children;
 };

@@ -14,6 +14,9 @@ export const RoleBasedRoute = ({
     return <Navigate to="/login" />;
   }
 
+  console.log("RoleBasedRoute - requiredRoles:", requiredRoles);
+  console.log("RoleBasedRoute - componentName:", componentName);
+  console.log("RoleBasedRoute - isAuthenticated:", isAuthenticated);
   const hasAccess = componentName 
     ? hasPermission(componentName)
     : hasRole(requiredRoles);
