@@ -60,19 +60,25 @@ const TicketList = () => {
   return (
     <div className="container mt-4">
       <div className="mb-4">
-        <h2>My Tickets</h2>
+        <h4>My Booked Tickets</h4>
         <p className="text-muted">View and manage all your booked tickets</p>
       </div>
 
       {loading ? (
-        <div className="alert alert-info">Loading tickets...</div>
+        <div className="alert alert-info">
+          <i className="fas fa-spinner fa-spin me-2"></i>
+          Loading tickets...
+        </div>
       ) : error ? (
         <div className="alert alert-danger">{error}</div>
       ) : tickets.length === 0 ? (
-        <div className="alert alert-info">No tickets booked yet. Book your first ticket now!</div>
+        <div className="alert alert-warning">
+          <i className="fas fa-info-circle me-2"></i>
+          No tickets booked yet. Book your first ticket now!
+        </div>
       ) : (
         <div className="table-responsive">
-          <table className="table table-striped table-hover">
+          <table className="table table-striped table-hover align-middle">
             <thead className="table-dark">
               <tr>
                 <th>Ticket ID</th>
@@ -87,18 +93,28 @@ const TicketList = () => {
             <tbody>
               {tickets.map((ticket) => (
                 <tr key={ticket.ticketId}>
-                  <td>#{ticket.ticketId}</td>
                   <td>
-                    {ticket.route?.title} ({ticket.route?.startPoint} → {ticket.route?.endPoint})
+                    <strong>#{ticket.ticketId}</strong>
+                  </td>
+                  <td>
+                    <strong>{ticket.route?.title}</strong>
+                    <br />
+                    <small className="text-muted">
+                      {ticket.route?.startPoint} → {ticket.route?.endPoint}
+                    </small>
                   </td>
                   <td>{formatDate(ticket.date)}</td>
-                  <td>₹{parseFloat(ticket.fareAmount).toFixed(2)}</td>
+                  <td>
+                    <strong>₹{parseFloat(ticket.fareAmount).toFixed(2)}</strong>
+                  </td>
                   <td>
                     <span className={`badge bg-${TICKET_STATUS_COLORS[ticket.status] || 'secondary'}`}>
                       {TICKET_STATUS_LABELS[ticket.status] || ticket.status}
                     </span>
                   </td>
-                  <td>{formatDate(ticket.createdAt)}</td>
+                  <td>
+                    <small className="text-muted">{formatDate(ticket.createdAt)}</small>
+                  </td>
                   <td>
                     <button
                       className="btn btn-sm btn-primary"

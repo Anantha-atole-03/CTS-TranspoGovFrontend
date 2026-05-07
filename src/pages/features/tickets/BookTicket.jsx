@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap'
+import { Modal, Button, Form, Spinner, Alert, Card } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { bookTicket } from '../../../axios/ticket_api'
 import { getRoutes } from '../../../axios/route_schedule_api'
-import { decodeJwt } from '../../../services/AuthService'   
 
-const BookTicket = ({ show, onHide, onSuccess }) => {
+const BookTicket = ({ show = true, onHide, onSuccess }) => {
   const [formData, setFormData] = useState({
     routeId: '',
     date: '',
@@ -98,7 +97,7 @@ const BookTicket = ({ show, onHide, onSuccess }) => {
         fareAmount: ''
       })
       onSuccess()
-      onHide()
+      if (onHide) onHide()
     } catch (err) {
       console.error('Error booking ticket:', err)
       toast.error(err.response?.data?.message || 'Failed to book ticket')
@@ -107,102 +106,123 @@ const BookTicket = ({ show, onHide, onSuccess }) => {
     }
   }
 
+  const bookingContent = (
+    <>
+      {Object.keys(errors).length > 0 && (
+        <Alert variant="danger" className="mb-3">
+          <strong>Please fix the following errors:</strong>
+          <ul className="mb-0 mt-2">
+            {Object.values(errors).map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </Alert>
+      )}
+
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Select Route *</Form.Label>
+          {fetchLoading ? (
+            <Form.Control disabled placeholder="Loading routes..." />
+          ) : (
+            <Form.Select
+              name="routeId"
+              value={formData.routeId}
+              onChange={handleChange}
+              isInvalid={!!errors.routeId}
+              required
+            >
+              <option value="">Choose a route...</option>
+              {routes.map(route => (
+                <option key={route.routeId} value={route.routeId}>
+                  {route.title} ({route.type}) - {route.startPoint} to {route.endPoint}
+                </option>
+              ))}
+            </Form.Select>
+          )}
+          <Form.Control.Feedback type="invalid">
+            {errors.routeId}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Date & Time *</Form.Label>
+          <Form.Control
+            type="datetime-local"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            isInvalid={!!errors.date}
+            required
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.date}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Fare Amount (₹) *</Form.Label>
+          <Form.Control
+            type="number"
+            name="fareAmount"
+            value={formData.fareAmount}
+            onChange={handleChange}
+            placeholder="Enter fare amount"
+            step="0.01"
+            min="0"
+            isInvalid={!!errors.fareAmount}
+            required
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.fareAmount}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <div className="d-flex gap-2">
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={loading || fetchLoading}
+          >
+            {loading ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />
+                Booking...
+              </>
+            ) : (
+              'Book Ticket'
+            )}
+          </Button>
+          {onHide && (
+            <Button variant="secondary" onClick={onHide} disabled={loading || fetchLoading}>
+              Cancel
+            </Button>
+          )}
+        </div>
+      </Form>
+    </>
+  )
+
+  // If used as standalone component (not modal)
+  if (!onHide) {
+    return (
+      <Card className="shadow-sm">
+        <Card.Body>
+          {bookingContent}
+        </Card.Body>
+      </Card>
+    )
+  }
+
+  // If used as modal component
   return (
     <Modal show={show} onHide={onHide} centered size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Book New Ticket</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {Object.keys(errors).length > 0 && (
-          <Alert variant="danger" className="mb-3">
-            <strong>Please fix the following errors:</strong>
-            <ul className="mb-0 mt-2">
-              {Object.values(errors).map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
-          </Alert>
-        )}
-
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Select Route *</Form.Label>
-            {fetchLoading ? (
-              <Form.Control disabled placeholder="Loading routes..." />
-            ) : (
-              <Form.Select
-                name="routeId"
-                value={formData.routeId}
-                onChange={handleChange}
-                isInvalid={!!errors.routeId}
-                required
-              >
-                <option value="">Choose a route...</option>
-                {routes.map(route => (
-                  <option key={route.routeId} value={route.routeId}>
-                    {route.title} ({route.type}) - {route.startPoint} to {route.endPoint}
-                  </option>
-                ))}
-              </Form.Select>
-            )}
-            <Form.Control.Feedback type="invalid">
-              {errors.routeId}
-            </Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Date & Time *</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              isInvalid={!!errors.date}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.date}
-            </Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Fare Amount (₹) *</Form.Label>
-            <Form.Control
-              type="number"
-              name="fareAmount"
-              value={formData.fareAmount}
-              onChange={handleChange}
-              placeholder="Enter fare amount"
-              step="0.01"
-              min="0"
-              isInvalid={!!errors.fareAmount}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.fareAmount}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form>
+        {bookingContent}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide} disabled={loading || fetchLoading}>
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleSubmit}
-          disabled={loading || fetchLoading}
-        >
-          {loading ? (
-            <>
-              <Spinner animation="border" size="sm" className="me-2" />
-              Booking...
-            </>
-          ) : (
-            'Book Ticket'
-          )}
-        </Button>
-      </Modal.Footer>
     </Modal>
   )
 }

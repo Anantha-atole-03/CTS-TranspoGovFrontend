@@ -16,9 +16,6 @@ const ProtectedRoute = ({ children, requiredRoles, componentName }) => {
   //   ? hasRole(requiredRoles)
   //   : true;
 
-  // if (!hasAccess) {
-  //   return <Navigate to="/" />;
-  // }
 
   return children;
 };
