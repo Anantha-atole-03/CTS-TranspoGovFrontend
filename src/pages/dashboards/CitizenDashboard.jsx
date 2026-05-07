@@ -1,64 +1,65 @@
-import React, { useState } from 'react'
-import { useRole } from '../../hooks/useRole'
-import { Container, Row, Col, Nav, Tab } from 'react-bootstrap'
-import './Dashboard.css'
+import React, { useState } from "react"
+import { useRole } from "../../hooks/useRole"
+import SidebarLayout from "../../components/SidebarLayout"
+import "./Dashboard.css"
+import { FaTicketAlt, FaCog, FaHistory, FaUser } from "react-icons/fa"
+import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
+import { Col, Row } from "react-bootstrap"
+import TicketsManagement from "../features/tickets/TicketsManagement"
+
+const iconMap = {
+  tickets: <FaTicketAlt />,
+  'my-bookings': <FaHistory />,
+  profile: <FaUser />,
+  settings: <FaCog />
+}
 
 const CitizenDashboard = () => {
-  const { user } = useRole()
+  const { user, role } = useRole()
+  const [activeKey, setActiveKey] = useState("tickets")
+
+  const menuItems = [
+    { key: "tickets", label: "My Tickets", requiredComponent: "Tickets" },
+    { key: "my-bookings", label: "My Bookings", requiredComponent: "Bookings" },
+    { key: "profile", label: "My Profile", requiredComponent: "Profile" },
+    { key: "settings", label: "Settings", requiredComponent: "Settings" }
+  ]
+
+  const renderContent = () => {
+    switch (activeKey) {
+      case "tickets":
+        return <TicketsManagement />
+      case "my-bookings":
+        return <h4>My Bookings</h4>
+      case "profile":
+        return <h4>My Profile</h4>
+      case "settings":
+        return <h4>Settings</h4>
+      default:
+        return null
+    }
+  }
 
   return (
-    <Container fluid className="dashboard-container">
-      <Row className="mb-4">
+    <SidebarLayout
+      menuItems={menuItems}
+      activeKey={activeKey}
+      onSelect={setActiveKey}
+      iconMap={iconMap}
+    >
+      <Row className="mb-4 align-items-center justify-content-between">
         <Col>
           <h1>Welcome, {user?.name}!</h1>
-          <p>Citizen Dashboard</p>
+          <p>Citizen Passenger Dashboard</p>
+        </Col>
+        <Col xs="auto" className="d-flex gap-3">
+          <BiSolidBell size={24} style={{ cursor: 'pointer' }} />
+          <BiSolidBellRing size={24} style={{ cursor: 'pointer' }} />
         </Col>
       </Row>
-
-      <Tab.Container id="citizen-tabs" defaultActiveKey="book-ticket">
-        <Row className="mb-3">
-          <Col sm={12}>
-            <Nav variant="tabs">
-              <Nav.Item>
-                <Nav.Link eventKey="book-ticket">Book Ticket</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="ticket-info">Ticket Info</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="ticket-list">Ticket List</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="profile">Profile</Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col sm={12}>
-            <Tab.Content>
-              <Tab.Pane eventKey="profile">
-                {/* <ProfileDetails /> */}
-                Profile
-              </Tab.Pane>
-              <Tab.Pane eventKey="book-ticket">
-                {/* <BookTicketForm /> */}
-                Book Ticket
-              </Tab.Pane>
-              <Tab.Pane eventKey="ticket-info">
-                {/* <TicketInfo /> */}
-                Ticket Info
-              </Tab.Pane>
-              <Tab.Pane eventKey="ticket-list">
-                {/* <TicketList /> */}
-                Ticket List
-              </Tab.Pane>
-            </Tab.Content>
-          </Col>
-        </Row>
-      </Tab.Container>
-    </Container>
+      <hr />
+      {renderContent()}
+    </SidebarLayout>
   )
 }
 

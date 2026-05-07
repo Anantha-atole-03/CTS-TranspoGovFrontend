@@ -11,22 +11,12 @@ const Dashboard = () => {
   if (!isAuthenticated) {
     return <div className="alert alert-warning">Please log in</div>
   }
-if(ROLES.CITIZEN_PASSENGER===role){
-  return <CitizenDashboard />
-}else{
-  return <UserDashboard />
-}
-  switch (role) {
-    case ROLES.CITIZEN_PASSENGER:
-      return <CitizenDashboard />
-    case ROLES.ADMIN:
-      return <UserDashboard />
-    case ROLES.COMPLIANCE_OFFICER:
-      return <UserDashboard />
-    case ROLES.TRANSPORT_OFFICER:
-      return <UserDashboard />
-    default:
-      return <div className="alert alert-danger">Unknown role. Please contact administrator.</div>
+
+  // Route based on role
+  if (role === ROLES.CITIZEN_PASSENGER) {
+    return <CitizenDashboard />
+  } else {
+    return <UserDashboard />
   }
 }
 
