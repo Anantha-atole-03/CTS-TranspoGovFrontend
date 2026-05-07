@@ -1,10 +1,10 @@
-
+ 
 import React, { useState } from "react"
 import { useRole } from "../../hooks/useRole"
 import UserManagement from "../features/user/UserManagement"
 import SidebarLayout from "../../components/SidebarLayout"
 import "./Dashboard.css"
-
+ 
 import {
   FaUserCog,
   FaChartBar,
@@ -14,17 +14,17 @@ import {
   FaChartLine,
   FaBus
 } from "react-icons/fa"
-
+ 
 import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
 import { Col, Row } from "react-bootstrap"
-
+ 
 import ProgramsResources from "../features/programs_resources/ProgramsResources"
 import ComplianceList from "../features/compliance_audits/complianceList"
 import AuditsList from "../features/compliance_audits/AuditsList"
 import RouteScheduleDashboard from "../features/routes_schedule/RouteScheduleDashboard"
-
+ 
 import { ROLES } from "../../config/roleConfig"
-
+ 
 const iconMap = {
   users: <FaUserCog />,
   "programs-resources": <FaFileAlt />,
@@ -35,11 +35,11 @@ const iconMap = {
   analytics: <FaChartLine />,
   settings: <FaCog />
 }
-
+ 
 const UserDashboard = () => {
   const { user, role, canAccess } = useRole()
   const [activeKey, setActiveKey] = useState("programs-resources")
-
+ 
   const baseMenuItems = [
     { key: "programs-resources", label: "Programs & Resources", requiredComponent: "ProgramsResources" },
     { key: "routes", label: "Routes & Schedules", requiredComponent: "Routes" },
@@ -47,20 +47,20 @@ const UserDashboard = () => {
     { key: "audits", label: "Audits", requiredComponent: "Audits" },
     { key: "reports", label: "Reports", requiredComponent: "Reports" },
   ]
-
-
+ 
+ 
   const adminMenuItems = [
     { key: "users", label: "User Management", requiredComponent: "UserManagement" },
     { key: "settings", label: "Settings", requiredComponent: "Settings" },
   ]
-
+ 
   const complianceMenuItems = [
     { key: "compliance", label: "Compliance", requiredComponent: "Compliance" },
     { key: "audits", label: "Audits", requiredComponent: "Audits" },
   ]
-
+ 
   let menuItems = [...baseMenuItems]
-
+ 
   // Add role-specific menu items
   if (role === ROLES.ADMINISTRATOR) {
     menuItems = [...adminMenuItems, ...baseMenuItems, ...complianceMenuItems]
@@ -71,27 +71,27 @@ const UserDashboard = () => {
   } else if (role === ROLES.TRANSPORT_OFFICER) {
     menuItems = [...baseMenuItems]
   }
-
-  const menuItems = allMenuItems//.filter(item => canAccess(item.requiredComponent) || item.requiredComponent === "UserManagement")
-
+ 
+  // const menuItems = allMenuItems//.filter(item => canAccess(item.requiredComponent) || item.requiredComponent === "UserManagement")
+ 
   const renderContent = () => {
     switch (activeKey) {
       case "users":
         return canAccess('UserManagement') ? <UserManagement /> : <div className="alert alert-danger">Access Denied</div>
       case "programs-resources":
         return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">Access Denied</div>
-
-         return <ProgramsResources /> 
+ 
+         return <ProgramsResources />
       case "routes":
         return <RouteScheduleDashboard />
         // return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">You do not have access to this section</div>
-        return <ProgramsResources /> 
+        return <ProgramsResources />
       case "compliance":
         // return canAccess('Compliance') ? <ComplianceList /> : <div className="alert alert-danger">Access Denied</div>
         return <ComplianceList />
         case "audits":
         // return canAccess('Audits') ? <AuditsList /> : <div className="alert alert-danger">Access Denied</div>
-
+ 
         return <AuditsList />
       case "reports":
         return canAccess('Reports') ? <h4>Reports & Analytics</h4> : <div className="alert alert-danger">Access Denied</div>
@@ -101,7 +101,7 @@ const UserDashboard = () => {
         return null
     }
   }
-
+ 
   const getRoleName = () => {
     const roleNames = {
       [ROLES.ADMINISTRATOR]: 'Administrator',
@@ -112,7 +112,7 @@ const UserDashboard = () => {
     }
     return roleNames[role] || role
   }
-
+ 
   return (
     <SidebarLayout
       menuItems={menuItems}
@@ -135,5 +135,6 @@ const UserDashboard = () => {
     </SidebarLayout>
   )
 }
-
+ 
 export default UserDashboard
+ 
