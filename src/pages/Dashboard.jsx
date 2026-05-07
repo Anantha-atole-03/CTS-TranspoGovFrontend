@@ -11,23 +11,17 @@ const Dashboard = () => {
   if (!isAuthenticated) {
     return <div className="alert alert-warning">Please log in</div>
   }
-if(ROLES.CITIZEN_PASSENGER===role){
-  return <CitizenDashboard />
-}else{
-  return <UserDashboard />
-}
-  switch (role) {
-    case ROLES.CITIZEN_PASSENGER:
-      return <CitizenDashboard />
-    case ROLES.ADMIN:
-      return <UserDashboard />
-    case ROLES.COMPLIANCE_OFFICER:
-      return <UserDashboard />
-    case ROLES.TRANSPORT_OFFICER:
-      return <UserDashboard />
-    default:
-      return <div className="alert alert-danger">Unknown role. Please contact administrator.</div>
+
+  console.log("Rendering Dashboard for role:", role)
+  // Show CitizenDashboard only for citizens
+  if (role === ROLES.CITIZEN_PASSENGER) {
+    console.log("Rendering CitizenDashboard for role:", role)
+    return <CitizenDashboard componentName="CitizenDashboard" />
   }
+
+  // All other roles use UserDashboard
+  console.log("Rendering UserDashboard for role:", role)
+  return <UserDashboard componentName="UserDashboard" />
 }
 
 export default Dashboard
