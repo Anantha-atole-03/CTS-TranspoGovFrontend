@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { ROUTE_STATUS, STATUS_LABELS, STATUS_OPTIONS } from '../../../utils/statusConstants'
-
+ 
 const ROUTE_TYPES = ['Bus', 'Metro', 'Train']
-
+ 
 const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
     // 1. Initial state helper to avoid repetition
     const initialState = {
@@ -12,9 +12,9 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
         endPoint: '',
         status: ROUTE_STATUS.DRAFT // Defaulting to a valid Enum value
     }
-
+ 
     const [route, setRoute] = useState(initialState)
-
+ 
     // 2. Sync form with routeToEdit prop
     useEffect(() => {
         if (routeToEdit) {
@@ -23,25 +23,25 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
             setRoute(initialState)
         }
     }, [routeToEdit])
-
+ 
     const handleChange = (e) => {
         const { name, value } = e.target
         setRoute(prev => ({ ...prev, [name]: value }))
     }
-
+ 
     const handleSubmit = (e) => {
         e.preventDefault()
         // Basic validation
         if (!route.title || !route.startPoint || !route.endPoint) return
-        
+       
         onSave(route)
-        
+       
         // Reset only if we are in "Create" mode
         if (!routeToEdit) {
             setRoute(initialState)
         }
     }
-
+ 
     return (
         <div className="card mb-4 shadow-sm">
             <div className="card-header bg-light">
@@ -64,7 +64,7 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
                                 required
                             />
                         </div>
-
+ 
                         <div className="col-md-6">
                             <label className="form-label fw-bold">Transport Type</label>
                             <select
@@ -78,7 +78,7 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
                                 ))}
                             </select>
                         </div>
-
+ 
                         <div className="col-md-6">
                             <label className="form-label fw-bold">Start Point</label>
                             <input
@@ -90,7 +90,7 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
                                 required
                             />
                         </div>
-
+ 
                         <div className="col-md-6">
                             <label className="form-label fw-bold">End Point</label>
                             <input
@@ -102,7 +102,7 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
                                 required
                             />
                         </div>
-
+ 
                         <div className="col-md-6">
                             <label className="form-label fw-bold">Status</label>
                             <select
@@ -119,15 +119,15 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
                             </select>
                         </div>
                     </div>
-
+ 
                     <div className="mt-4 d-flex gap-2">
                         <button type="submit" className="btn btn-primary">
                             {routeToEdit ? 'Save Changes' : 'Create Route'}
                         </button>
                         {routeToEdit && (
-                            <button 
-                                type="button" 
-                                className="btn btn-outline-secondary" 
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
                                 onClick={onCancel}
                             >
                                 Cancel Edit
@@ -139,5 +139,5 @@ const RouteForm = ({ onSave, routeToEdit, onCancel }) => {
         </div>
     )
 }
-
+ 
 export default RouteForm

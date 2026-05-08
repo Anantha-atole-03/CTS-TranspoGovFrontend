@@ -21,12 +21,17 @@ import { getRouteId, normalizeId } from '../../../utils/routeUtils'
 const RouteScheduleDashboard = () => {
     const [routes, setRoutes] = useState([])
     const [schedules, setSchedules] = useState([])
-    const [selectedRouteID, setSelectedRouteID] = useState(null)
+    
+    // PERSISTENCE: Initialize from localStorage so selection survives refresh
+    const [selectedRouteID, setSelectedRouteID] = useState(() => {
+        return localStorage.getItem('lastSelectedRouteId') || null;
+    })
+    
     const [editingRoute, setEditingRoute] = useState(null)
     const [editingSchedule, setEditingSchedule] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    const [currentView, setCurrentView] = useState('list') 
+    const [currentView, setCurrentView] = useState('list')
     const [showSchedulePopUp, setShowSchedulePopUp] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [routeToDelete, setRouteToDelete] = useState(null)
@@ -51,14 +56,24 @@ const RouteScheduleDashboard = () => {
             const data = response.data.data || response.data || []
             setSchedules(Array.isArray(data) ? data : [])
         } catch (err) {
+            console.error("Fetch schedule error:", err)
             setSchedules([])
         }
     }
 
-    useEffect(() => { fetchRoutes() }, [])
+    // Load initial routes
+    useEffect(() => { 
+        fetchRoutes() 
+    }, [])
 
+    // Whenever selectedRouteID changes (including on refresh), fetch schedules
     useEffect(() => {
-        if (selectedRouteID) fetchSchedules(selectedRouteID)
+        if (selectedRouteID) {
+            fetchSchedules(selectedRouteID);
+            localStorage.setItem('lastSelectedRouteId', selectedRouteID);
+        } else {
+            localStorage.removeItem('lastSelectedRouteId');
+        }
     }, [selectedRouteID])
 
     const handleSaveRoute = async (routeData) => {
@@ -79,7 +94,6 @@ const RouteScheduleDashboard = () => {
 
     const handleSaveSchedule = async (scheduleData) => {
         try {
-            // Use the routeId selected in the form
             const targetRouteId = normalizeId(scheduleData.routeId);
             
             if (editingSchedule) {
@@ -91,7 +105,10 @@ const RouteScheduleDashboard = () => {
                 toast.success('Schedule created!')
             }
             
-            setSelectedRouteID(targetRouteId) // Switch view to the route we just scheduled
+            // Re-fetch schedules immediately to ensure UI is in sync
+            await fetchSchedules(targetRouteId)
+            setSelectedRouteID(targetRouteId)
+            
             setShowSchedulePopUp(false)
             setEditingSchedule(null)
         } catch (err) {
@@ -99,10 +116,13 @@ const RouteScheduleDashboard = () => {
         }
     }
 
+    // Helper to find the current selected route object
+    const currentSelectedRoute = routes.find(r => normalizeId(getRouteId(r)) === normalizeId(selectedRouteID));
+
     return (
         <div className="container py-4">
-            <div className="mb-4">
-                <h1 className="fw-bold">Route & Schedule Management</h1>
+            <div className="mb-4 d-flex justify-content-between align-items-center">
+                <h1 className="fw-bold text-dark">Govt Transport Management</h1>
             </div>
 
             {currentView === 'create' && <CreateRouteForm onSave={handleSaveRoute} onCancel={() => setCurrentView('list')} />}
@@ -118,25 +138,24 @@ const RouteScheduleDashboard = () => {
                         setShowSchedulePopUp(true)
                     }}
                     onEdit={(r) => { setEditingRoute(r); setCurrentView('edit'); }}
-                    onDelete={(id) => { 
-                        setRouteToDelete(routes.find(r => getRouteId(r) === id)); 
-                        setShowDeleteDialog(true); 
+                    onDelete={(id) => {
+                        setRouteToDelete(routes.find(r => getRouteId(r) === id));
+                        setShowDeleteDialog(true);
                     }}
-                    // Note: onSelect is still passed to highlight the row when clicked
-                    onSelect={setSelectedRouteID} 
+                    onSelect={setSelectedRouteID}
                 />
             )}
 
             {showSchedulePopUp && (
-                <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+                <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1050 }}>
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content border-0 shadow-lg">
-                            <ScheduleForm 
-                                routes={routes} // Pass all routes to the form
-                                onSave={handleSaveSchedule} 
+                            <ScheduleForm
+                                routes={routes}
+                                onSave={handleSaveSchedule}
                                 scheduleToEdit={editingSchedule}
                                 initialRouteId={selectedRouteID}
-                                onCancel={() => { setShowSchedulePopUp(false); setEditingSchedule(null); }} 
+                                onCancel={() => { setShowSchedulePopUp(false); setEditingSchedule(null); }}
                             />
                         </div>
                     </div>
@@ -145,18 +164,27 @@ const RouteScheduleDashboard = () => {
 
             <div className="mt-5">
                 <ScheduleList
-                    route={routes.find(r => normalizeId(getRouteId(r)) === normalizeId(selectedRouteID))}
+                    route={currentSelectedRoute}
                     schedules={schedules}
                     onEdit={(s) => { setEditingSchedule(s); setShowSchedulePopUp(true); }}
-                    onDelete={async (id) => { await deleteSchedule(id); fetchSchedules(selectedRouteID); }}
+                    onDelete={async (id) => { 
+                        await deleteSchedule(id); 
+                        fetchSchedules(selectedRouteID); 
+                        toast.info("Schedule deleted");
+                    }}
                 />
             </div>
 
-            <DeleteRouteDialog 
-                route={routeToDelete} 
-                isOpen={showDeleteDialog} 
-                onConfirm={async (id) => { await deleteRoute(id); fetchRoutes(); setShowDeleteDialog(false); }} 
-                onCancel={() => setShowDeleteDialog(false)} 
+            <DeleteRouteDialog
+                route={routeToDelete}
+                isOpen={showDeleteDialog}
+                onConfirm={async (id) => { 
+                    await deleteRoute(id); 
+                    if(selectedRouteID === id) setSelectedRouteID(null);
+                    fetchRoutes(); 
+                    setShowDeleteDialog(false); 
+                }}
+                onCancel={() => setShowDeleteDialog(false)}
             />
         </div>
     )
