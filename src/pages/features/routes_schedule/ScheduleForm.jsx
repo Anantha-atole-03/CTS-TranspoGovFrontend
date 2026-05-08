@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { getRouteId } from '../../../utils/routeUtils'
-
+ 
 const SCHEDULE_STATUS_OPTIONS = [
     { value: 'SCHEDULED', label: 'Scheduled' },
     { value: 'CANCELLED', label: 'Cancelled' },
     { value: 'COMPLETED', label: 'Completed' }
 ]
-
+ 
 const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId }) => {
     const [schedule, setSchedule] = useState({
         routeId: initialRouteId || '',
@@ -14,7 +14,7 @@ const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId
         time: '',
         status: 'SCHEDULED'
     })
-
+ 
     useEffect(() => {
         if (scheduleToEdit) {
             setSchedule({
@@ -25,7 +25,7 @@ const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId
             })
         }
     }, [scheduleToEdit, initialRouteId])
-
+ 
     const handleSubmit = (e) => {
         e.preventDefault()
         if (!schedule.routeId) {
@@ -34,15 +34,15 @@ const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId
         }
         onSave(schedule)
     }
-
+ 
     return (
         <div className="p-4">
             <h5 className="mb-4 fw-bold">{scheduleToEdit ? 'Edit Schedule' : 'Add New Schedule'}</h5>
-            
+           
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="form-label fw-bold small text-uppercase">Select Route</label>
-                    <select 
+                    <select
                         className="form-select"
                         value={schedule.routeId}
                         onChange={(e) => setSchedule({...schedule, routeId: e.target.value})}
@@ -56,7 +56,7 @@ const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId
                         ))}
                     </select>
                 </div>
-
+ 
                 <div className="row g-3">
                     <div className="col-md-6">
                         <label className="form-label fw-bold small">Date</label>
@@ -75,7 +75,7 @@ const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId
                         </select>
                     </div>
                 </div>
-
+ 
                 <div className="mt-4 d-flex gap-2 justify-content-end">
                     <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>Cancel</button>
                     <button type="submit" className="btn btn-success px-4">Save Schedule</button>
@@ -84,5 +84,5 @@ const ScheduleForm = ({ routes, onSave, scheduleToEdit, onCancel, initialRouteId
         </div>
     )
 }
-
+ 
 export default ScheduleForm

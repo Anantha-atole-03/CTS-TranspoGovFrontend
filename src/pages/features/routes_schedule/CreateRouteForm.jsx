@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ROUTE_STATUS, STATUS_LABELS, STATUS_OPTIONS } from '../../../utils/statusConstants'
+import { ROUTE_STATUS, STATUS_OPTIONS } from '../../../utils/statusConstants'
 
 const ROUTE_TYPES = ['Bus', 'Metro', 'Train']
 
@@ -9,29 +9,34 @@ const CreateRouteForm = ({ onSave, onCancel }) => {
         type: 'Bus',
         startPoint: '',
         endPoint: '',
-        status: ROUTE_STATUS.DRAFT // Default status
+        fares: '', // Explicitly added fare
+        status: ROUTE_STATUS.DRAFT 
     }
 
     const [route, setRoute] = useState(initialState)
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setRoute(prev => ({ ...prev, [name]: value }))
+        // Convert fare to a number immediately for the backend
+        const val = name === 'fare' ? (value === '' ? '' : parseFloat(value)) : value;
+        setRoute(prev => ({ ...prev, [name]: val }))
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!route.title || !route.startPoint || !route.endPoint) return // Ensure required fields are filled
+        // Validation: Ensure fare is provided and is a positive number
+        if (!route.title || !route.startPoint || !route.endPoint || route.fare === '') {
+            alert("Please fill in all fields including a valid Fare");
+            return 
+        }
 
-        // Send the route object without routeId
         onSave(route)
-
-        setRoute(initialState) // Reset form after successful creation
+        setRoute(initialState) 
     }
 
     return (
-        <div className="card mb-4 shadow-sm">
-            <div className="card-header bg-light">
+        <div className="card mb-4 shadow-sm border-0">
+            <div className="card-header bg-primary text-white">
                 <h5 className="mb-0">Create New Route</h5>
             </div>
             <div className="card-body">
@@ -45,7 +50,7 @@ const CreateRouteForm = ({ onSave, onCancel }) => {
                                 value={route.title}
                                 onChange={handleChange}
                                 className="form-control"
-                                placeholder="e.g. Downtown Circular"
+                                placeholder="e.g. Bangalore Express"
                                 required
                             />
                         </div>
@@ -89,6 +94,21 @@ const CreateRouteForm = ({ onSave, onCancel }) => {
                         </div>
 
                         <div className="col-md-6">
+                            <label className="form-label fw-bold">Fare (Price)</label>
+                            <input
+                                type="number"
+                                name="fares"
+                                value={route.fares}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                required
+                            />
+                        </div>
+
+                        <div className="col-md-6">
                             <label className="form-label fw-bold">Status</label>
                             <select
                                 name="status"
@@ -106,12 +126,12 @@ const CreateRouteForm = ({ onSave, onCancel }) => {
                     </div>
 
                     <div className="mt-4 d-flex gap-2">
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="btn btn-primary px-4">
                             Create Route
                         </button>
                         <button
                             type="button"
-                            className="btn btn-outline-secondary"
+                            className="btn btn-outline-secondary px-4"
                             onClick={onCancel}
                         >
                             Cancel

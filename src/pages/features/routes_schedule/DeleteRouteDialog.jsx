@@ -1,11 +1,11 @@
 import React from 'react'
 import { getRouteId } from '../../../utils/routeUtils'
-
+ 
 const DeleteRouteDialog = ({ route, isOpen, onConfirm, onCancel }) => {
     if (!isOpen || !route) return null
-
+ 
     const routeId = getRouteId(route)
-
+ 
     return (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <div className="modal-dialog modal-dialog-centered">
@@ -65,5 +65,5 @@ const DeleteRouteDialog = ({ route, isOpen, onConfirm, onCancel }) => {
         </div>
     )
 }
-
+ 
 export default DeleteRouteDialog

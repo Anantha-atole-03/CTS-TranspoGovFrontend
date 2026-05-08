@@ -1,7 +1,7 @@
 import React from 'react'
 import { STATUS_COLORS, STATUS_LABELS } from '../../../utils/statusConstants'
 import { getRouteId } from '../../../utils/routeUtils'
-
+ 
 const RouteList = ({ routes, onEdit, onDelete, onAdd, onAddSchedule, onSelect, selectedRouteID }) => {
     return (
         <div className="card mb-4 shadow-sm">
@@ -28,8 +28,8 @@ const RouteList = ({ routes, onEdit, onDelete, onAdd, onAddSchedule, onSelect, s
                         {routes.map(route => {
                             const isSelected = getRouteId(route) === selectedRouteID;
                             return (
-                                <tr 
-                                    key={getRouteId(route)} 
+                                <tr
+                                    key={getRouteId(route)}
                                     onClick={() => onSelect(getRouteId(route))}
                                     style={{ cursor: 'pointer' }}
                                     className={isSelected ? 'table-primary' : ''}
@@ -56,5 +56,5 @@ const RouteList = ({ routes, onEdit, onDelete, onAdd, onAddSchedule, onSelect, s
         </div>
     )
 }
-
+ 
 export default RouteList
