@@ -47,3 +47,13 @@ export const updateSchedule = async (scheduleID, scheduleData) => {
 export const deleteSchedule = async (scheduleID) => {
 	return api.delete(`/schedule/${scheduleID}`)
 }
+
+// Get fare for a specific route
+export const getRouteFare = async (routeId) => {
+  return api.get(`/route/${routeId}`)
+}
+
+// Get routes by type
+export const getRoutesByType = async (type) => {
+  return api.get(`/route/type/${type}`)
+}

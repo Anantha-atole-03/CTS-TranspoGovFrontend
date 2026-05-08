@@ -90,9 +90,9 @@ const UserDashboard = () => {
         // return canAccess('Compliance') ? <ComplianceList /> : <div className="alert alert-danger">Access Denied</div>
         return <ComplianceList />
         case "audits":
-        // return canAccess('Audits') ? <AuditsList /> : <div className="alert alert-danger">Access Denied</div>
+        return canAccess('Audits') ? <AuditsList /> : <div className="alert alert-danger">Access Denied</div>
  
-        return <AuditsList />
+        // return <AuditsList />
       case "reports":
         return canAccess('Reports') ? <h4>Reports & Analytics</h4> : <div className="alert alert-danger">Access Denied</div>
       case "settings":

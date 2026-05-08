@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { bookTicket } from '../../../axios/ticket_api'
-import { getRoutes } from '../../../axios/route_schedule_api'
+import { getRoutes, getRouteFare } from '../../../axios/route_schedule_api'
 import PaymentModal from './PaymentModal'
 
 const BookTicketModal = ({ show, onHide, onSuccess }) => {
@@ -15,6 +15,8 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
   const [loading, setLoading] = useState(false)
   const [fetchLoading, setFetchLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [selectedRouteDetails, setSelectedRouteDetails] = useState(null)
+  const [fareLoading, setFareLoading] = useState(false)
   const [bookedTicketId, setBookedTicketId] = useState(null)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
 
@@ -36,6 +38,33 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
       setRoutes([])
     } finally {
       setFetchLoading(false)
+    }
+  }
+
+  const fetchRouteFare = async (routeId) => {
+    try {
+      setFareLoading(true)
+      const response = await getRouteFare(routeId)
+      const routeData = response.data.data || response.data
+
+      // Set the fare from database and update formData with route ID
+      setFormData(prev => ({
+        ...prev,
+        routeId: routeId, // Ensure routeId is preserved
+        fareAmount: routeData.fares || ''
+      }))
+
+      setSelectedRouteDetails(routeData)
+      console.log('Route fare fetched:', routeData)
+    } catch (err) {
+      console.error('Failed to fetch route fare:', err)
+      toast.error('Failed to load fare information')
+      setFormData(prev => ({
+        ...prev,
+        fareAmount: ''
+      }))
+    } finally {
+      setFareLoading(false)
     }
   }
 
@@ -64,10 +93,30 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+
+    if (name === 'routeId') {
+      // Update formData immediately with the selected routeId
+      setFormData(prev => ({
+        ...prev,
+        routeId: value,
+        fareAmount: '' // Clear fare until it's fetched
+      }))
+
+      // Fetch fare when route is selected
+      if (value) {
+        fetchRouteFare(value)
+      } else {
+        setSelectedRouteDetails(null)
+      }
+    } else if (name === 'fareAmount') {
+      // Don't allow manual changes to fare
+      return
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
 
     if (errors[name]) {
       setErrors(prev => ({
@@ -94,7 +143,7 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
 
       const response = await bookTicket(payload)
       const ticketData = response.data.data || response.data
-      
+
       toast.success('Ticket booked successfully! Proceeding to payment...')
       setBookedTicketId(ticketData.ticketId)
       setShowPaymentModal(true)
@@ -115,12 +164,9 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
     setErrors({})
     setBookedTicketId(null)
     setShowPaymentModal(false)
+    setSelectedRouteDetails(null)
     if (onSuccess) onSuccess()
     if (onHide) onHide()
-  }
-
-  const handlePaymentCancel = () => {
-    setShowPaymentModal(false)
   }
 
   const handleClose = () => {
@@ -130,7 +176,9 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
       fareAmount: ''
     })
     setErrors({})
+    setSelectedRouteDetails(null)
     setBookedTicketId(null)
+    setShowPaymentModal(false)
     if (onHide) onHide()
   }
 
@@ -178,6 +226,23 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
               </Form.Control.Feedback>
             </Form.Group>
 
+            {/* Route Details Display */}
+            {selectedRouteDetails && formData.routeId && (
+              <Alert variant="info" className="mb-3">
+                <h6 className="mb-2"><strong>Selected Route Details</strong></h6>
+                <div className="row">
+                  <div className="col-md-6">
+                    <p className="mb-1"><strong>Route:</strong> {selectedRouteDetails.title}</p>
+                    <p className="mb-0"><strong>Type:</strong> {selectedRouteDetails.type}</p>
+                  </div>
+                  <div className="col-md-6">
+                    <p className="mb-1"><strong>From:</strong> {selectedRouteDetails.startPoint}</p>
+                    <p className="mb-0"><strong>To:</strong> {selectedRouteDetails.endPoint}</p>
+                  </div>
+                </div>
+              </Alert>
+            )}
+
             <Form.Group className="mb-3">
               <Form.Label>Date & Time *</Form.Label>
               <Form.Control
@@ -194,18 +259,31 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Fare Amount (₹) *</Form.Label>
-              <Form.Control
-                type="number"
-                name="fareAmount"
-                value={formData.fareAmount}
-                onChange={handleChange}
-                placeholder="Enter fare amount"
-                step="0.01"
-                min="0"
-                isInvalid={!!errors.fareAmount}
-                required
-              />
+              <Form.Label>Fare Amount (₹) - Auto-calculated</Form.Label>
+              <div className="input-group">
+                <Form.Control
+                  type="number"
+                  name="fareAmount"
+                  value={formData.fareAmount}
+                  onChange={handleChange}
+                  placeholder="Fare will be auto-loaded from database"
+                  step="0.01"
+                  min="0"
+                  isInvalid={!!errors.fareAmount}
+                  disabled={true}
+                  readOnly
+                  className="bg-light"
+                  required
+                />
+                {fareLoading && (
+                  <span className="input-group-text">
+                    <Spinner animation="border" size="sm" />
+                  </span>
+                )}
+              </div>
+              <Form.Text className="text-muted">
+                Fare is automatically fetched from the database based on the selected route. You cannot modify this value.
+              </Form.Text>
               <Form.Control.Feedback type="invalid">
                 {errors.fareAmount}
               </Form.Control.Feedback>
@@ -213,13 +291,13 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose} disabled={loading || fetchLoading}>
+          <Button variant="secondary" onClick={handleClose} disabled={loading || fetchLoading || fareLoading}>
             Cancel
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
-            disabled={loading || fetchLoading}
+            disabled={loading || fetchLoading || fareLoading}
           >
             {loading ? (
               <>
@@ -237,7 +315,10 @@ const BookTicketModal = ({ show, onHide, onSuccess }) => {
       <PaymentModal
         ticketId={bookedTicketId}
         show={showPaymentModal}
-        onHide={handlePaymentCancel}
+        onHide={() => {
+          setShowPaymentModal(false)
+          setBookedTicketId(null)
+        }}
         onSuccess={handlePaymentSuccess}
       />
     </>

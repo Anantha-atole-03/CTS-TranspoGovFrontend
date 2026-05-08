@@ -26,17 +26,17 @@ export const roleConfig = {
   [ROLES.ADMINISTRATOR]: {
     name: 'Administrator',
     canAccess: ['Dashboard', 'UserManagement', 'ProgramsResources', 'Reports', 'Settings', 'Compliance', 'Transport', 'Audits'],
-    canPerform: ['viewAllData', 'manageUsers', 'generateReports', 'manageRoles', 'manageVehicles', 'allocateResources', 'analyzeResources', 'managePrograms'],
+    canPerform: ['viewAllData', 'manageUsers', 'generateReports', 'manageRoles', 'manageVehicles', 'allocateResources', 'analyzeResources', 'managePrograms', 'createAudit', 'viewAuditData', 'editAudit'],
   },
   [ROLES.COMPLIANCE_OFFICER]: {
     name: 'Compliance Officer',
     canAccess: ['Dashboard', 'Complaints', 'Inspections', 'Reports', 'ViewTransport', 'Audits'],
-    canPerform: ['viewComplaints', 'createInspection', 'generateReports', 'viewTransportData', 'viewAnalytics', 'auditPrograms'],
+    canPerform: ['viewComplaints', 'createInspection', 'generateReports', 'viewTransportData', 'viewAnalytics', 'createAudit', 'viewAuditData'],
   },
   [ROLES.GOVERNMENT_AUDITOR]: {
     name: 'Government Auditor',
     canAccess: ['Dashboard', 'Reports', 'Audits', 'Compliance', 'ViewTransport'],
-    canPerform: ['generateReports', 'viewAnalytics', 'auditPrograms', 'viewComplianceData'],
+    canPerform: ['generateReports', 'viewAnalytics', 'createAudit', 'viewAuditData', 'viewComplianceData'],
   },
 };
 
@@ -47,7 +47,7 @@ export const componentPermissions = {
   ProgramsResources: [ROLES.ADMINISTRATOR, ROLES.PROGRAM_MANAGER, ROLES.TRANSPORT_OFFICER],
   Reports: [ROLES.ADMINISTRATOR, ROLES.COMPLIANCE_OFFICER, ROLES.PROGRAM_MANAGER, ROLES.GOVERNMENT_AUDITOR],
   Settings: [ROLES.ADMINISTRATOR],
-  Compliance: [ROLES.ADMINISTRATOR, ROLES.COMPLIANCE_OFFICER],
+  Compliance: [ROLES.ADMINISTRATOR, ROLES.COMPLIANCE_OFFICER, ROLES.GOVERNMENT_AUDITOR],
   Transport: [ROLES.ADMINISTRATOR, ROLES.TRANSPORT_OFFICER],
   Audits: [ROLES.ADMINISTRATOR, ROLES.COMPLIANCE_OFFICER, ROLES.GOVERNMENT_AUDITOR],
   Profile: [ROLES.CITIZEN_PASSENGER, ROLES.ADMINISTRATOR],

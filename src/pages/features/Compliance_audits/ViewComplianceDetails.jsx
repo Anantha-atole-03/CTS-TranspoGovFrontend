@@ -133,13 +133,13 @@ const ViewComplianceDetails = ({ show, onHide, complianceId, loading, onEdit, on
         >
           <FaEdit /> Edit
         </Button>
-        <Button 
+        {/* <Button 
           variant="danger" 
           onClick={() => onDelete(compliance?.complianceId)}
           disabled={!compliance}
         >
           <FaTrash /> Delete
-        </Button>
+        </Button> */}
         <Button variant="secondary" onClick={onHide}>
           Close
         </Button>

@@ -9,6 +9,9 @@ export const getAllCompliance = () =>
 export const getComplianceById = (id) =>
   api.get(`/compliance/${id}`);
 
+export const getComplianceByType = (type) =>
+  api.get(`/compliance/type/${type}`);
+
 export const createCompliance = (complianceData) =>
   api.post('/compliance/save', complianceData);
 

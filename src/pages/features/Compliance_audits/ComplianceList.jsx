@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Alert, Spinner } from "react-bootstrap";
-import { getAllCompliance, getComplianceById, deleteCompliance } from "../../../axios/compliance_audit";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { Table, Button, Alert, Spinner, Form, Row, Col } from "react-bootstrap";
+import { getAllCompliance, getComplianceById, deleteCompliance, getComplianceByType } from "../../../axios/compliance_audit";
+import { FaEye, FaEdit, FaTrash, FaFilter } from "react-icons/fa";
 import ViewComplianceDetails from "./ViewComplianceDetails";
 import EditComplianceModal from "./EditComplianceModal";
 import CreateComplianceModal from "./CreateComplianceModal";
 import "./complianceList.css";
+
+const COMPLIANCE_TYPES = [
+  { value: '', label: 'All Types' },
+  { value: 'ROUTE', label: 'Route' },
+  { value: 'TICKET', label: 'Ticket' },
+  { value: 'PROGRAM', label: 'Program' }
+];
 
 const ComplianceList = () => {
   const [complianceData, setComplianceData] = useState([]);
@@ -15,12 +22,18 @@ const ComplianceList = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filterType, setFilterType] = useState('');
 
   const fetchComplianceData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getAllCompliance();
+      let response;
+      if (filterType) {
+        response = await getComplianceByType(filterType);
+      } else {
+        response = await getAllCompliance();
+      }
       console.log("Compliance data fetched:", response.data);
       setComplianceData(response.data);
     } catch (err) {
@@ -75,6 +88,10 @@ const ComplianceList = () => {
     }
   };
 
+  const handleFilterChange = (e) => {
+    setFilterType(e.target.value);
+  };
+
   const handleEditSuccess = () => {
     fetchComplianceData();
   };
@@ -102,7 +119,7 @@ const ComplianceList = () => {
 
   useEffect(() => {
     fetchComplianceData();
-  }, []);
+  }, [filterType]);
 
   if (loading && complianceData.length === 0) {
     return <Spinner animation="border" />;
@@ -122,57 +139,99 @@ const ComplianceList = () => {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <Table striped bordered hover responsive>
-        <thead className="table-header">
-          <tr>
-            <th>ID</th>
-            <th>Entity Type</th>
-            <th>Result</th>
-            <th>Compliance Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {complianceData.map((compliance) => (
-            <tr key={compliance.complianceId}>
-              <td>{compliance.complianceId}</td>
-              <td>{compliance.type}</td>
-              <td>
-                <span className={`badge bg-${getResultBadgeVariant(compliance.result)}`}>
-                  {compliance.result}
-                </span>
-              </td>
-              <td>{new Date(compliance.complianceDate).toLocaleDateString()}</td>
-              <td className="action-buttons">
-                <Button
-                  variant="info"
-                  size="sm"
-                  onClick={() => handleViewDetails(compliance.complianceId)}
-                  title="View Details"
-                >
-                  <FaEye /> View
-                </Button>
-                <Button 
-                  variant="warning" 
-                  size="sm" 
-                  onClick={() => handleEditClick(compliance.complianceId)}
-                  title="Edit"
-                >
-                  <FaEdit /> Edit
-                </Button>
-                <Button 
-                  variant="danger" 
-                  size="sm" 
-                  onClick={() => handleDeleteClick(compliance.complianceId)}
-                  title="Delete"
-                >
-                  <FaTrash /> Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      {/* Filter Section */}
+      <div className="filter-section mb-4">
+        <Row className="align-items-end">
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label className="fw-bold">
+                <FaFilter className="me-2" />
+                Filter by Entity Type
+              </Form.Label>
+              <Form.Select
+                value={filterType}
+                onChange={handleFilterChange}
+                className="filter-select"
+              >
+                {COMPLIANCE_TYPES.map(type => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={8} className="text-end">
+            <small className="text-muted">
+              Total Records: <strong>{complianceData.length}</strong>
+            </small>
+          </Col>
+        </Row>
+      </div>
+
+      {complianceData.length === 0 ? (
+        <Alert variant="info">
+          No compliance records found{filterType ? ` for type: ${filterType}` : ''}
+        </Alert>
+      ) : (
+        <div className="table-responsive">
+          <Table striped bordered hover responsive>
+            <thead className="table-header">
+              <tr>
+                <th>ID</th>
+                <th>Entity Type</th>
+                <th>Result</th>
+                <th>Compliance Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {complianceData.map((compliance) => (
+                <tr key={compliance.complianceId}>
+                  <td>{compliance.complianceId}</td>
+                  <td>
+                    <span className={`badge bg-${getTypeColorBadge(compliance.type)}`}>
+                      {compliance.type}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`badge bg-${getResultBadgeVariant(compliance.result)}`}>
+                      {compliance.result}
+                    </span>
+                  </td>
+                  <td>{new Date(compliance.complianceDate).toLocaleDateString()}</td>
+                  <td className="action-buttons">
+                    <Button
+                      variant="info"
+                      size="sm"
+                      onClick={() => handleViewDetails(compliance.complianceId)}
+                      title="View Details"
+                    >
+                      <FaEye /> View
+                    </Button>
+                    <Button 
+                      variant="warning" 
+                      size="sm" 
+                      onClick={() => handleEditClick(compliance.complianceId)}
+                      title="Edit"
+                    >
+                      <FaEdit /> Edit
+                    </Button>
+                    {/* <Button 
+                      variant="danger" 
+                      size="sm" 
+                      onClick={() => handleDeleteClick(compliance.complianceId)}
+                      title="Delete"
+                    >
+                      <FaTrash /> Delete
+                    </Button> */}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
 
       <ViewComplianceDetails
         show={showViewModal}
@@ -198,6 +257,19 @@ const ComplianceList = () => {
       />
     </div>
   );
+};
+
+const getTypeColorBadge = (type) => {
+  switch (type) {
+    case 'ROUTE':
+      return 'primary';
+    case 'TICKET':
+      return 'success';
+    case 'PROGRAM':
+      return 'warning';
+    default:
+      return 'secondary';
+  }
 };
 
 export default ComplianceList;
