@@ -1,0 +1,201 @@
+/* ===============================
+   MAIN CONTAINER
+================================ */
+.notification-container {
+  padding: 20px;
+}
+
+/* ===============================
+   SEND NOTIFICATION (ADMIN)
+================================ */
+.send-box {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.send-box input,
+.send-box textarea,
+.send-box select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.send-box textarea {
+  resize: vertical;
+}
+
+.send-box button {
+  padding: 8px 16px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.send-box button:hover {
+  background: #0056b3;
+}
+
+/* INPUT FOCUS */
+.send-box input:focus,
+.send-box textarea:focus,
+.send-box select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0,123,255,0.5);
+}
+
+/* ===============================
+   SHOW ALL BUTTON
+================================ */
+.show-all-btn {
+  margin: 10px 0 20px;
+  padding: 8px 14px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.show-all-btn:hover {
+  background: #0056b3;
+}
+
+/* ===============================
+   FULL NOTIFICATION LIST
+================================ */
+.section-title {
+  margin-bottom: 15px;
+}
+
+.notification-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+/* CARD */
+.notification-card {
+  background: #fff;
+  padding: 14px;
+  border-radius: 8px;
+  border-left: 5px solid #007bff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s ease;
+}
+
+.notification-card:hover {
+  transform: translateY(-3px);
+}
+
+.notification-card.read {
+  opacity: 0.6;
+  border-left-color: gray;
+}
+
+/* CARD HEADER */
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+/* BADGES */
+.category {
+  background: #007bff;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.status {
+  font-weight: bold;
+  font-size: 11px;
+}
+
+/* MESSAGE */
+.message {
+  font-size: 14px;
+  word-break: break-word;
+}
+
+/* FOOTER */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.card-footer button {
+  background: green;
+  color: #fff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.card-footer button:hover {
+  background: darkgreen;
+}
+
+/* EMPTY STATE */
+.empty {
+  text-align: center;
+  color: gray;
+}
+
+/* ===============================
+   🔔 POPUP NOTIFICATION PANEL
+================================ */
+.popup-panel {
+  position: absolute;
+  right: 20px;
+  top: 70px;
+  width: 380px;
+  max-height: 500px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* POPUP HEADER */
+.popup-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+}
+
+/* POPUP SCROLL AREA */
+.popup-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+/* POPUP ITEM */
+.popup-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+

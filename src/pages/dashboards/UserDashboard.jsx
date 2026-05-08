@@ -1,54 +1,72 @@
-import React, { useState } from "react"
-import { useRole } from "../../hooks/useRole"
-import UserManagement from "../features/user/UserManagement"
-import SidebarLayout from "../../components/SidebarLayout"
-import "./Dashboard.css"
-import { FaUserCog, FaChartBar, FaCog, FaFileAlt } from "react-icons/fa"
-import { BiSolidBell, BiSolidBellRing } from "react-icons/bi"
-import { Col, Row } from "react-bootstrap"
-import ProgramsResources from "../features/programs_resources/ProgramsResources"
-import Reports from "../features/reports/Reports"
-import { ROLES } from "../../config/roleConfig"
+import React, { useState, useEffect, useRef } from "react";
+import { useRole } from "../../hooks/useRole";
+import UserManagement from "../features/user/UserManagement";
+import SidebarLayout from "../../components/SidebarLayout";
+import "./Dashboard.css";
+import { FaUserCog, FaChartBar, FaCog, FaFileAlt, FaBell } from "react-icons/fa";
+import { BiSolidBell } from "react-icons/bi";
+import { Col, Row } from "react-bootstrap";
+import ProgramsResources from "../features/programs_resources/ProgramsResources";
+import Reports from "../features/reports/Reports";
+import Notifications from "../features/notification/Notifications";
+import { ROLES } from "../../config/roleConfig";
 
 const iconMap = {
   users: <FaUserCog />,
-  'programs-resources': <FaFileAlt />,
+  "programs-resources": <FaFileAlt />,
   reports: <FaChartBar />,
-  settings: <FaCog />
-}
+  notifications: <FaBell />,
+  settings: <FaCog />,
+};
 
 const UserDashboard = () => {
-  const { user, role, canAccess } = useRole()
-  const [activeKey, setActiveKey] = useState("users")
+  const { user } = useRole();
+  const [activeKey, setActiveKey] = useState("users");
 
-  const allMenuItems = [
-    { key: "users", label: "User Management", requiredComponent: "UserManagement" },
-    { key: "programs-resources", label: "Programs & Resources", requiredComponent: "ProgramsResources" },
-    { key: "reports", label: "Reports", requiredComponent: "Reports" },
-    { key: "settings", label: "Settings", requiredComponent: "Settings" }
-  ]
+  const [showPopup, setShowPopup] = useState(false);
 
-  const menuItems = allMenuItems//.filter(item => canAccess(item.label.replace(/\s+/g, '')) || item.requiredComponent === "UserManagement")
+  // ✅ OUTSIDE CLICK HANDLER
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (panelRef.current && !panelRef.current.contains(event.target)) {
+        setShowPopup(false);
+      }
+    };
+
+    if (showPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPopup]);
 
   const renderContent = () => {
     switch (activeKey) {
       case "users":
-        return <UserManagement />
+        return <UserManagement />;
       case "programs-resources":
-         return <ProgramsResources /> 
-        // return canAccess('ProgramsResources') ? <ProgramsResources /> : <div className="alert alert-danger">You do not have access to this section</div>
+        return <ProgramsResources />;
       case "reports":
-        return <Reports />
+        return <Reports />;
+      case "notifications":
+        return <Notifications />;
       case "settings":
-        return <h4>Settings</h4>
+        return <h4>Settings</h4>;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <SidebarLayout
-      menuItems={menuItems}
+      menuItems={Object.keys(iconMap).map(key => ({
+        key,
+        label: key.replace(/-/g, " "),
+      }))}
       activeKey={activeKey}
       onSelect={setActiveKey}
       iconMap={iconMap}
@@ -56,17 +74,31 @@ const UserDashboard = () => {
       <Row className="mb-4 align-items-center justify-content-between">
         <Col>
           <h1>Welcome, {user?.name}!</h1>
-          <p>{user?.role?.toUpperCase().replace(/_/g, ' ')} Dashboard</p>
+          <p>{user?.role}</p>
         </Col>
+
         <Col xs="auto" className="d-flex gap-3">
-          <BiSolidBell size={24} style={{ cursor: 'pointer' }} />
-          <BiSolidBellRing size={24} style={{ cursor: 'pointer' }} />
+          {/* ✅ BELL */}
+          <BiSolidBell
+            size={24}
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowPopup(prev => !prev)}
+          />
         </Col>
       </Row>
+
+      {/* ✅ POPUP */}
+      {showPopup && (
+        <div ref={panelRef}>
+          <Notifications isPopup={true} />
+        </div>
+      )}
+
       <hr />
+
       {renderContent()}
     </SidebarLayout>
-  )
-}
+  );
+};
 
-export default UserDashboard
+export default UserDashboard;

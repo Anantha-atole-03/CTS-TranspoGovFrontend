@@ -1,21 +1,29 @@
-//notification api calls
 import api from "../config/axios.config";
 
-export const getNotifications = async (userId) => {
-  try {
-    const response = await api.get(`/notifications/${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
-    throw error;
-  }
+/* ✅ GET USER NOTIFICATIONS */
+export const getUserNotifications = (userId) => {
+  return api.get("/notification/user", {
+    headers: {
+      "X-User-Id": userId
+    }
+  });
 };
 
-export const markNotificationAsRead = async (notificationId) => {
-  try {
-    await api.patch(`/notifications/${notificationId}/read`);
-  } catch (error) {
-    console.error("Error marking notification as read:", error);
-    throw error;
-  }
+/* ✅ GET CITIZEN NOTIFICATIONS */
+export const getCitizenNotifications = (userId) => {
+  return api.get("/notification/citizen", {
+    headers: {
+      "X-User-Id": userId
+    }
+  });
+};
+
+/* ✅ MARK AS READ */
+export const markAsRead = (notificationId) => {
+  return api.patch(`/notification/${notificationId}`);
+};
+
+/* ✅ CREATE NOTIFICATION (optional) */
+export const pushNotification = (data) => {
+  return api.post("/notification/save", data);
 };

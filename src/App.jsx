@@ -23,7 +23,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/debug-api" element={<DebugApi />} />
         <Route 
           path="/dashboard" 
           element={  
