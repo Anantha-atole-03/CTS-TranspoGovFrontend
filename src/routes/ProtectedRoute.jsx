@@ -2,25 +2,23 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useRole } from '../hooks/useRole';
-
+ 
 const ProtectedRoute = ({ children, requiredRoles, componentName }) => {
   const { isAuthenticated, hasRole, hasPermission } = useRole();
-
+ 
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-
-  const hasAccess = componentName 
-    ? hasPermission(componentName)
-    : requiredRoles 
-    ? hasRole(requiredRoles)
-    : true;
-
-  // if (!hasAccess) {
-  //   return <Navigate to="/" />;
-  // }
-
+ 
+  // const hasAccess = componentName
+  //   ? hasPermission(componentName)
+  //   : requiredRoles
+  //   ? hasRole(requiredRoles)
+  //   : true;
+ 
+ 
   return children;
 };
-
+ 
 export default ProtectedRoute;
+ 

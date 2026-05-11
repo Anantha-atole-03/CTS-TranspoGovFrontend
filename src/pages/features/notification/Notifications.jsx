@@ -1,64 +1,79 @@
 import React, { useEffect, useState } from "react";
 import {
   getUserNotifications,
+  getCitizenNotifications,
   markAsRead,
   pushNotification
 } from "../../../axios/notification_api";
 import "./Notifications.css";
 import { useRole } from "../../../hooks/useRole";
-
-const Notifications = ({ isPopup = false }) => {
-  const { user } = useRole();
-  const userId = user?.id;
-
+ 
+/*
+  ✅ onHasUnreadChange:
+  Sends TRUE/FALSE to dashboard
+*/
+const Notifications = ({ isPopup = false, onHasUnreadChange }) => {
+  const { user, role } = useRole();
+  const userId = user?.id || user?.userId || user?.phone;
+ 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
-
+ 
   const [formData, setFormData] = useState({
     targetUserId: "",
     email: "",
     message: "",
     category: "PROGRAM"
   });
-
+ 
   const fetchNotifications = async () => {
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await getUserNotifications(userId);
+      let res;
+      if (role === "CITIZEN_PASSENGER") {
+        res = await getCitizenNotifications(userId);
+      } else {
+        res = await getUserNotifications(userId);
+      }
       setNotifications(res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Notification fetch error:", err);
     } finally {
       setLoading(false);
     }
   };
-
+ 
   useEffect(() => {
-    if (!userId) return;
     fetchNotifications();
-
     const interval = setInterval(fetchNotifications, 8000);
     return () => clearInterval(interval);
-  }, [userId]);
-
+  }, [role, userId]);
+ 
   const sortedNotifications = [...notifications].sort(
     (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
   );
-
+ 
+  /* ✅ SIMPLE UNREAD CHECK */
+  const hasUnread = sortedNotifications.some(
+    (n) => n.status === "UNREAD"
+  );
+ 
+  /* ✅ SEND ALERT STATE TO DASHBOARD */
+  useEffect(() => {
+    if (onHasUnreadChange) {
+      onHasUnreadChange(hasUnread);
+    }
+  }, [hasUnread, onHasUnreadChange]);
+ 
   const handleRead = async (id) => {
     await markAsRead(id);
-    setNotifications(prev =>
-      prev.map(n =>
+    setNotifications((prev) =>
+      prev.map((n) =>
         n.notificationId === id ? { ...n, status: "READ" } : n
       )
     );
   };
-
+ 
   const handleSend = async () => {
     try {
       await pushNotification({
@@ -73,21 +88,25 @@ const Notifications = ({ isPopup = false }) => {
       console.error(err);
     }
   };
-
+ 
   if (loading) return <p>Loading...</p>;
-
-  // ✅ POPUP MODE
+ 
+  /* ✅ POPUP MODE */
   if (isPopup) {
     return (
       <div className="popup-panel">
         <h4>🔔 Notifications</h4>
-
+ 
         <div className="popup-scroll">
+          {sortedNotifications.length === 0 && (
+            <p className="text-muted">No notifications available</p>
+          )}
+ 
           {sortedNotifications.map((n) => (
             <div key={n.notificationId} className="popup-item">
               <span className="category">{n.category}</span>
               <p>{n.message}</p>
-
+ 
               {n.status === "UNREAD" && (
                 <button onClick={() => handleRead(n.notificationId)}>
                   Mark Read
@@ -99,14 +118,13 @@ const Notifications = ({ isPopup = false }) => {
       </div>
     );
   }
-
-  // ✅ FULL PAGE
+ 
+  /* ✅ FULL PAGE MODE (UNCHANGED) */
   return (
     <div className="notification-container">
-
       <div className="send-box">
         <h3>Send Notification</h3>
-
+ 
         <input
           placeholder="User ID"
           value={formData.targetUserId}
@@ -114,7 +132,7 @@ const Notifications = ({ isPopup = false }) => {
             setFormData({ ...formData, targetUserId: e.target.value })
           }
         />
-
+ 
         <input
           placeholder="Email"
           value={formData.email}
@@ -122,7 +140,7 @@ const Notifications = ({ isPopup = false }) => {
             setFormData({ ...formData, email: e.target.value })
           }
         />
-
+ 
         <textarea
           placeholder="Message"
           value={formData.message}
@@ -130,7 +148,7 @@ const Notifications = ({ isPopup = false }) => {
             setFormData({ ...formData, message: e.target.value })
           }
         />
-
+ 
         <select
           value={formData.category}
           onChange={(e) =>
@@ -142,24 +160,26 @@ const Notifications = ({ isPopup = false }) => {
           <option>TICKET</option>
           <option>COMPLIANCE</option>
         </select>
-
+ 
         <button onClick={handleSend}>Send</button>
       </div>
-
+ 
       <button onClick={() => setShowAll(true)}>
         Show My All Notifications
       </button>
-
+ 
       {showAll && (
         <div className="notification-grid">
           {sortedNotifications.map((n) => (
             <div
               key={n.notificationId}
-              className={`notification-card ${n.status === "READ" ? "read" : ""}`}
+              className={`notification-card ${
+                n.status === "READ" ? "read" : ""
+              }`}
             >
               <p>{n.message}</p>
               <span>{n.category}</span>
-
+ 
               {n.status === "UNREAD" && (
                 <button onClick={() => handleRead(n.notificationId)}>
                   Mark Read
@@ -172,5 +192,7 @@ const Notifications = ({ isPopup = false }) => {
     </div>
   );
 };
-
+ 
 export default Notifications;
+ 
+ 
