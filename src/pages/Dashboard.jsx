@@ -20,7 +20,9 @@ if(ROLES.CITIZEN_PASSENGER===role){
     case ROLES.CITIZEN_PASSENGER:
       return <CitizenDashboard />
     case ROLES.ADMIN:
-      return <UserDashboard />
+      case ROLES.ADMINISTRATOR:
+        return <UserDashboard />
+
     case ROLES.COMPLIANCE_OFFICER:
       return <UserDashboard />
     case ROLES.TRANSPORT_OFFICER:

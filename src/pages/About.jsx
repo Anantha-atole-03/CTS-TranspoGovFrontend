@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+ 
 export const About = () => {
   return (
     <div className="bg-light min-vh-100">
@@ -16,7 +16,7 @@ export const About = () => {
           </p>
         </div>
       </section>
-
+ 
       {/* Introduction */}
       <section className="py-5">
         <div className="container">
@@ -48,7 +48,7 @@ export const About = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* User Roles */}
       <section className="py-5 bg-white">
         <div className="container">
@@ -105,7 +105,7 @@ export const About = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Modules */}
       <section className="py-5">
         <div className="container">
@@ -178,7 +178,7 @@ export const About = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Architecture */}
       <section className="py-5 bg-white">
         <div className="container">
@@ -219,7 +219,7 @@ export const About = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Non-Functional Requirements */}
       <section className="py-5">
         <div className="container">
@@ -260,7 +260,7 @@ export const About = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Footer CTA */}
       <section className="py-5 bg-primary text-white">
         <div className="container text-center">
@@ -272,3 +272,5 @@ export const About = () => {
     </div>
   );
 };
+ 
+ 

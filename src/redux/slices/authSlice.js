@@ -1,7 +1,7 @@
 //auth Slice
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { decodeJwt,  register } from '../../services/AuthService';
-import {login } from '../../axios/auth_api';
+import {login, signup } from '../../axios/auth_api';
  
 export const loginUser = createAsyncThunk(
   '/auth/login',
@@ -13,17 +13,19 @@ export const loginUser = createAsyncThunk(
  
       const data = decodeJwt(response.data.token);
       if (!data) throw new Error('Invalid token received from server');
+     
+      // Extract citizenId or userId from token
+      const userId = data.id || data.sub || data.userId || data.citizenId;
+     
       const payload = {
         token: response.data.token,
         user: {
-          id: data.id,
-          role: data.role
+          id: userId,
+          role: data.role,
+          phone: credentials.phone
         }
  
       };
-            console.log(payload);
-            localStorage.setItem('token', payload.token);
-            localStorage.setItem('user', JSON.stringify(payload.user));
  
       return payload;
  
@@ -42,25 +44,15 @@ export const registerUser = createAsyncThunk(
     try {
       console.log(credentials);
  
-      const response = await register(credentials);
-      if (response.status !== 200) throw new Error(response.data.message);
+      const response = await signup(credentials);
+      if (response.status !== 200 && response.status !== 201) throw new Error(response.data.message);
  
-      const token = response.data.data.token;
- 
-      const data = decodeJwt(token);
-      if (!data) throw new Error('Invalid token received from server');
-      console.log(response, data);
- 
+      // Signup successful - user created
       const payload = {
-        token: token,
-        user: {
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          status : 'ACTIVE'
-        }
+        message: 'Signup successful!',
+        email: credentials.email,
+        status: response.data.status || 'ACTIVE'
       };
- 
  
       return payload;
  
@@ -88,6 +80,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('citizenId');
+      localStorage.removeItem('phone');
     },
     setRegistrationData: (state, action) => {
       state.user = action.payload;
@@ -108,6 +102,8 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         localStorage.setItem('token', action.payload.token);
         localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('citizenId', action.payload.user.id);
+        localStorage.setItem('phone', action.payload.user.phone);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -118,12 +114,11 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
- 
-        localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        // Don't authenticate yet - user is in PENDING status
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

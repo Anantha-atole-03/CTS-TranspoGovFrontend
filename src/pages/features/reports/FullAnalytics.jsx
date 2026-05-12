@@ -35,11 +35,11 @@ const FullAnalytics = () => {
   ] : [];
 
   return (
-    <div className="analytics-container">
+    <div className="analytics-page">
 
       {/* HEADER */}
       <div className="analytics-header">
-        <h2>📊 Full Analytics Dashboard</h2>
+        <h2>📊 Program Analytics Dashboard</h2>
 
         <div className="input-group">
           <input

@@ -70,7 +70,17 @@ function Login() {
       toast.success('Login successful!');
       navigate('/dashboard');
     } else if (loginUser.rejected.match(result)) {
-      toast.error(result.payload || 'Login failed. Please try again.');
+      // Check if error is related to PENDING status
+      const errorMessage = result.payload || 'Login failed. Please try again.';
+      if (errorMessage.includes('PENDING') || errorMessage.includes('pending') || errorMessage.includes('approval')) {
+        toast.warning('⏳ Your account is awaiting admin approval. Please check back later.');
+      } else if (errorMessage.includes('SUSPENDED')) {
+        toast.error('❌ Your account has been suspended.');
+      } else if (errorMessage.includes('INACTIVE')) {
+        toast.error('❌ Your account is inactive.');
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -149,7 +159,7 @@ function Login() {
           <div className="text-center">
             <p className="text-muted mb-0">
               Don't have an account?{' '}
-              <Link to="/register" className="text-primary fw-semibold text-decoration-none">
+              <Link to="/signup-selection" className="text-primary fw-semibold text-decoration-none">
                 Sign up here
               </Link>
             </p>

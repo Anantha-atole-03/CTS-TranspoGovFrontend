@@ -122,7 +122,7 @@ const Notifications = ({ isPopup = false, onHasUnreadChange }) => {
   /* ✅ FULL PAGE MODE (UNCHANGED) */
   return (
     <div className="notification-container">
-      <div className="send-box">
+      <div className="send-box modern-card">
         <h3>Send Notification</h3>
  
         <input
@@ -173,9 +173,11 @@ const Notifications = ({ isPopup = false, onHasUnreadChange }) => {
           {sortedNotifications.map((n) => (
             <div
               key={n.notificationId}
-              className={`notification-card ${
-                n.status === "READ" ? "read" : ""
-              }`}
+             
+className={`notification-card ${n.category?.toLowerCase()} ${
+  n.status === "READ" ? "read" : ""
+}`}
+
             >
               <p>{n.message}</p>
               <span>{n.category}</span>

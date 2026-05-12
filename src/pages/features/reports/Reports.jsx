@@ -31,7 +31,7 @@ const Reports = () => {
           className={activeTab === 'analytics' ? 'tab-btn active' : 'tab-btn'}
           onClick={() => setActiveTab('analytics')}
         >
-          Full Analytics
+          Program Analytics
         </button>
       </div>
 

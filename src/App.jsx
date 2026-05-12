@@ -1,6 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/features/authentication/Login";
+import SignUp from "./pages/features/authentication/SignUp";
+import ForgotPassword from "./pages/features/authentication/ForgotPassword";
+import CitizenSignUp from "./pages/features/authentication/CitizenSignUp";
+import CitizenForgotPassword from "./pages/features/authentication/CitizenForgotPassword";
+import UserSelection from "./pages/features/authentication/UserSelection";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { Provider } from "react-redux";
@@ -10,7 +15,10 @@ import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import { About } from "./pages/About";
 import Contact from "./pages/Contact";
+ 
+import RouteScheduleDashboard from "./pages/features/routes_schedule/RouteScheduleDashboard";
 import AccessDenied from "./components/AccessDenied";
+ 
  
  
 function App() {
@@ -21,6 +29,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup-selection" element={<UserSelection />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/citizen-signup" element={<CitizenSignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/citizen/forgot-password" element={<CitizenForgotPassword />} />
         <Route
           path="/dashboard"
           element={  
@@ -49,4 +62,5 @@ function App() {
 }
  
 export default App
+ 
  
